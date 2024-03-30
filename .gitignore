@@ -1,0 +1,4 @@
+*.txt
+!README.txt
+a.out
+out

@@ -1,0 +1,9 @@
+LevelToSink:
+  - Name: Info
+    Sink: File
+    FileName: Info.log
+  - Name: Error
+    Sink: Console
+  - Name: Fatal
+    Sink: File
+    FileName: Fatal.log

@@ -1,7 +1,7 @@
 #include<iostream>
 #include<fstream>
 #include<vector>
-#include <yaml-cpp/yaml>
+#include<yaml-cpp/yaml.h>
 
 using namespace std;
 
@@ -23,7 +23,7 @@ class ConsoleLogger : public ILogger {
 public:
 
     void log(string msg) {
-        cout << getLevel() << " " << msg << endl;
+        cout << getLevel().c_str() << " " << msg << endl;
     }
 
     friend class GlobalLogger;
@@ -76,11 +76,12 @@ public:
        Sink: File
        FileName: Fatal.log
     */
-    void init(YAML::Node config) {
+    void init(string configFile) {
+        YAML::Node config = YAML::LoadFile(configFile);
         for(auto level : config["LevelToSink"]) {
             string name = level["Name"].as<string>();
             string sink = level["Sink"].as<string>();
-            string fileName = level["FileName"].as<string>();
+            string fileName = sink == "File" ? level["FileName"].as<string>(): "";
             ILogger* logger = nullptr;
             if(sink == "Console") {
                 logger = new ConsoleLogger(name);
@@ -92,22 +93,28 @@ public:
         }    
     }
 
-    void log(string msg, string level) {
-        for(int i=0; i<levels.size(); i++) {
+    void log(string level, string msg) {
+        int i;
+        for(i=0; i<levels.size(); i++) {
             if(levels[i] == level) {
                 break;
             }
         }
 
-        for(;i>=0; i--) {
+        for(i;i>=0; i--) {
             ILogger* logger = levelToLoggerMap[i];
             logger->log(msg);
         }
     }
-
 };
+
+GlobalLogger* GlobalLogger::logger = nullptr;
 
 int main() {
 
+
+    GlobalLogger* logger = GlobalLogger::getInstance();
+    logger->init("config.yml");
+    logger->log("Info", "This is an info message");
     return 0;
 }

@@ -5,6 +5,12 @@
 
 using namespace std;
 
+/* Requirements:
+1. Levels should be configurable.
+2. Sink for each level should be configurablel.
+3. For each log msg of level A, it should also log msgs to all the lower level sinks.
+*/
+
 class ILogger {
     string level;
 public:
@@ -23,7 +29,7 @@ class ConsoleLogger : public ILogger {
 public:
 
     void log(string msg) {
-        cout << getLevel().c_str() << " " << msg << endl;
+        cout << getLevel().c_str() << ": " << msg << endl;
     }
 
     friend class GlobalLogger;
@@ -38,7 +44,7 @@ class FileLogger : public ILogger {
 public:
     void log(string msg) {
         ofstream file(fileName, ios::app);
-        file<< getLevel() << " " << msg << endl;
+        file<< getLevel() << ": " << msg << endl;
         file.close();
     }
 
@@ -76,21 +82,23 @@ public:
        Sink: File
        FileName: Fatal.log
     */
+
     void init(string configFile) {
         YAML::Node config = YAML::LoadFile(configFile);
-        for(auto level : config["LevelToSink"]) {
-            string name = level["Name"].as<string>();
-            string sink = level["Sink"].as<string>();
-            string fileName = sink == "File" ? level["FileName"].as<string>(): "";
+        for(auto level:config["LevelToSink"]) {
+            string levelName = level["Name"].as<string>();
+            string sinkName = level["Sink"].as<string>();
+
+            string fileName = sinkName == "File"? level["FileName"].as<string>(): "";
             ILogger* logger = nullptr;
-            if(sink == "Console") {
-                logger = new ConsoleLogger(name);
-            } else if(sink == "File") {
-                logger = new FileLogger(fileName, name);
+            levels.push_back(levelName);
+            if(sinkName == "Console") {
+                logger = new ConsoleLogger(levelName);
+            } else {
+                logger = new FileLogger(fileName, levelName);
             }
             levelToLoggerMap.push_back(logger);
-            levels.push_back(name);
-        }    
+        }
     }
 
     void log(string level, string msg) {
@@ -116,5 +124,7 @@ int main() {
     GlobalLogger* logger = GlobalLogger::getInstance();
     logger->init("config.yml");
     logger->log("Info", "This is an info message");
+    logger->log("Fatal", "This is a fatal message");
+    logger->log("Error", "This is an error message");
     return 0;
 }

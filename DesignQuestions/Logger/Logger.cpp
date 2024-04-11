@@ -59,14 +59,3 @@ void GlobalLogger::log(string level, string msg) {
         logger->log(msg);
     }
 }
-
-int main() {
-
-
-    GlobalLogger* logger = GlobalLogger::getInstance();
-    logger->init("config.yml");
-    logger->log("Info", "This is an info message");
-    logger->log("Fatal", "This is a fatal message");
-    logger->log("Error", "This is an error message");
-    return 0;
-}

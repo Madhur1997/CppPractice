@@ -4,6 +4,9 @@
 
 using namespace std;
 
+// Functional requirements: 
+1. 
+
 enum BookFormat {
     HARDCOVER,
     PAPERBACK
@@ -16,9 +19,9 @@ enum ReservationStatus {
 };
 
 class Address {
-    string city;
-    string street;
     string houseNumber;
+    string street;
+    string city;
     int pincode;
 };
 
@@ -93,7 +96,7 @@ class BookRepository {
     BookRepository(const BookRepository & b) = delete;
 
 public:
-    BookRepository* getInstance();
+    static BookRepository* getInstance();
     void addBook();
     void removeBook();
     void updateBook();
@@ -106,7 +109,7 @@ class CustomerRepository {
     CustomerRepository() = default;
     CustomerRepository(const CustomerRepository & u) = delete;
 public:
-    CustomerRepository* getInstance();
+    static CustomerRepository* getInstance();
     void registerCustomer();
     void removeCustomer();
     void updateCustomer();
@@ -115,7 +118,7 @@ public:
 
 /*
 Run as a cron job every day
-Whenever a book item goes out of due date, issue a notification to the 
+Whenever a book item goes out of due date, issue a notification to the customer.
 */
 class BookNotificationService {
 

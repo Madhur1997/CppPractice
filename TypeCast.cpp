@@ -51,7 +51,7 @@ void drawShape(Shape* shape) {
 int main() {
     Shape* circle1 = new Circle(3), *square2 = new Square(5);
     drawShape(circle1);
-    cout<<"\n\n";
+    cout<<"\n";
     drawShape(square2); 
     return 0;
 }

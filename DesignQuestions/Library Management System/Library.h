@@ -4,8 +4,15 @@
 
 using namespace std;
 
-// Functional requirements: 
-1. 
+/* Functional requirements: 
+1. Issue/Return/Reserve a book.
+2. Calculate fine on return.
+3. Send notification if a book is out of due date.
+4. Search a book.
+5. Search a customer.
+6. Bar code scan a book -> shows all book information.
+7. Bar code scan a user card -> shows all user information.
+*/
 
 enum BookFormat {
     HARDCOVER,
@@ -52,7 +59,7 @@ public:
     void addCustomerReservation(Customer* customer);
     void removeCustomerReservation(Customer* customer);
     void updateCustomerReservation(Customer* customer);
-    void searchCustomerReservation(Customer* customer);
+    bool searchCustomerReservation(Customer* customer);
 };
 
 
@@ -117,11 +124,21 @@ public:
 };
 
 /*
-Run as a cron job every day
+Run as a cron job(background thread) every day
 Whenever a book item goes out of due date, issue a notification to the customer.
+Uses book lending service to calculate fine.
 */
 class BookNotificationService {
+    BookLendingService* bookLendingService;
+    BookRepository* bookRepository;
+    thread dueDateNotificationThread;
+public:
+    BookNotificationService(BookLendingService* bookLendingService, BookRepository* bookRepository) : bookLendingService(bookLendingService), bookRepository(bookRepository) {
+        dueDateNotificationThread = thread(&BookNotificationService::BookOutOfDueDateNotification, this);
+    }
 
+    void BookOutOfDueDateNotification();
+    void BookInInventoryNotification();
 };
 
 class BookLendingService {
@@ -132,25 +149,23 @@ public:
     BookLendingService(BookRepository* bookRepository, CustomerRepository* customerRepository) : bookRepository(bookRepository), customerRepository(customerRepository){}
     bool ReserveBook(string customerId, string bookId);
     bool IssueBook(string customerId, string bookId);
-};
-
-class BookReturnService {
-    BookRepository* bookRepository;
-    CustomerRepository* customerRepository;
-
-public:
-    BookReturnService(BookRepository* bookRepository, CustomerRepository* customerRepository) : bookRepository(bookRepository), customerRepository(customerRepository){}
     int CalculateFine(string bookId, int itemNumber);
     int ReturnBook(string bookId, int itemNumber);
 };
 
-class BarCodeScanner {
-
-};
-
+/*
+Barcode scan service is invoked when a book/customer card is scanned using the scanner. 
+It fetches the book/customer information from the database and displays it on the screen.
+The byte array scans to integer/long and then fetches the book/customer information from the database.
+*/
 class BarcodeScanService {
-    BarCodeScanner* barCodeScanner;
+    static BarcodeScanService* instance;
+    BookRepository* bookRepository_;
+    BarcodeScanService() = default;
+    BarcodeScanService(const BarcodeScanService& b) = delete;
+    BarcodeScanService(BookRepository* bookRepository) : bookRepository_(bookRepository) {}
 public:
-    BarcodeScanService(BarCodeScanner* barCodeScanner) : barCodeScanner(barCodeScanner){}
-    BookItem* ScanBookItem();
+    static BarcodeScanService* getInstance(BookRepository* bookRepository);
+    BookItem* ScanBookItem(int bookId, int bookItemNumber);
+    Customer* ScanCustomerCard(int customerId);
 };

@@ -5,7 +5,7 @@ using namespace std;
 
 /* Requirements:
 1. Levels should be configurable.
-2. Sink for each level should be configurablel.
+2. Sink for each level should be configurable.
 3. For each log msg of level A, it should also log msgs to all the lower level sinks.
 */
 

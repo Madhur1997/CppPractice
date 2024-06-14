@@ -7,4 +7,5 @@ TEST_CASE("Logger test") {
     logger->log("Info", "This is an info message");
     logger->log("Fatal", "This is a fatal message");
     logger->log("Error", "This is an error message");
+    // Assert on the log file contents.
 }

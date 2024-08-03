@@ -6,6 +6,12 @@
 
 using namespace std;
 
+/*
+Can use chain of responsibility design pattern which is also majorly used in applications like ATM, vending machine.
+Where there could be multiple handlers exhibiting same type of behavior and one or more could serve the requests.
+The handlers are assembled in a chain using linked list like pattern.
+*/
+
 string ILogger::getLevel() {
     return level;
 }

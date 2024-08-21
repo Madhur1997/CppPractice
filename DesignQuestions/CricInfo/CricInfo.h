@@ -9,151 +9,144 @@ FR:
 1. Teams, match histories
 2. Ball by ball commentary of the match
 3. Stats at players, team, tournament level
-4. In a tournament -> each team has a playing squad
+4. In a tournament -> each team has a playing squad of 16 players.
 5. In a match -> each team has a playing 11.
 */
 
 class Player {
     string name;
     int playerId;
-    int teamId;
-    vector<int> matchIds;
-    vector<int> tournamentIds;
+    int age;
+    string role;
+    int totalRuns;
+    int totalWickets;
+    int totalMatches;
+    double battingAverage;
+    double bowlingAverage;
+    double strikeRate;
+    double economy;
 };
 
-class PlayerRepository {
-
+class BatsmanMatchStat {
+    int playerId;
+    int runs;
+    int ballsFaced;
+    int fours;
+    int sixes;
+    double strikeRate;
 };
 
-class Team {
-    string name;
-    int teamId;
-    vector<int> playerIds;
-    vector<int> matchIds;
-public:
-    Team(string name) : name(name) {}
-    void addPlayer(int playerId);
-    void removePlayer(int playerId);
-    void addMatch(int matchId);
-    void removeMatch(int matchId);
-    void addTournament(int tournamentId);
-    void removeTournament(int tournamentId);
+class BowlerMatchStats {
+    int playerId;
+    int wickets;
+    int runs;
+    int balls;
+    int maidenOvers;
+    double economy;
 };
 
-class PlayingTeam {
-    vector<int> playerIds;
-    int teamId;
-
-};
-
-class PlayingSquad {
-    vector<int> playerIds;
-    int teamId;
+class Extras {
+    int wides;
+    int noBalls;
+    int byes;
+    int legByes;
 };
 
 enum WicketType {
-    Bowled,
-    RunOut,
-    Caught,
-    HitWicket,
-    Stump,
-    LBW
+    BOWLED,
+    CAUGHT,
+    LBW,
+    RUN_OUT,
+    STUMPED,
+    HIT_WICKET,
+    RETIRED_HURT,
+    RETIRED_OUT,
+    OBSTRUCTING_THE_FIELD
 };
 
-class BallStat {
-    int ballNumber;
-    int runsScored;
-    bool wicket;
-    WicketType wicket;
-    string commentary;
+class Comment {
+    int commentId
+    string comment;
+    int ball;
 };
 
 class Inning {
-    int inningsId;
-    int teamId;
-    vector<vector<BallStat>> overs;
-    unordered_map<int, int> playerScores;
-    vector<int> fallOfWickets;
-    int totalScore;
+    int inningId;
+    int battingTeamId;
+    int bowlingTeamId;
+    int totalRuns; 
     int totalWickets;
-    int totalOvers;
+    int totalBowlsFaced;
+    vector<BatsmanMatchStat> batsmanStats;
+    vector<BowlerMatchStats> bowlerStats;
+    vector<Extras> extras;
+    vector<Comment> commentary;
+};
+
+enum matchResult {
+    TEAM1_WIN,
+    TEAM2_WIN,
+    DRAW
 };
 
 class Match {
+    vector<Inning*> innings;
     int matchId;
-    int team1Id, team2Id;
-    MatchState state;
-    MatchType type;
-    vector<Inning> innings;
-    Stadium stadium;
-public:
-    Match(int matchId, int team1Id, int team2Id, Stadium stadium) : matchId(matchId), team1Id(team1Id), team2Id(team2Id), stadium(stadium) {}
-    void addBallStat(int inningNum, BallStat ballStat);
-    void updateScore(int runs);
-    void updateWickets();
-    void updateOvers();
-    void updatePlayerScore(int playerId, int runs);
-    void getScore();
-    void getWickets();
-    void getOvers();
-    void getPlayerScore(int playerId);
-    BallStat getCommentary(int overNumber, int ballNumber);
-    void updateMatchState(MatchState state);
+    int tournamentId;
+    vector<int> playingTeams[2];
+    string date;
+    matchResult result;
 };
 
-class PlayerService {
-
-};
-
-class MatchService {
-
-};
-
-enum MatchState {
+enum TournamentState {
     NOT_STARTED,
     IN_PROGRESS,
     COMPLETED
 };
 
-enum MatchType {
-    T20,
-    ODI,
-    TEST
-};
-
-enum MatchResult {
-    TEAM1_WON,
-    TEAM2_WON,
-    DRAW
-};
-
-class Address {
-public:
-    string streetName;
-    string city;
-    string state;
-    string country;
-    int pincode;
-};
-
-class Stadium {
-    Address address;
-    string name;
-    int stadiumId;
-};
-
-
 class Tournament {
+    int tournamentId;
     string name;
-    vector<Team> teams;
-    vector<Match> matches;
-    vector<Player> players;
+    string startDate;
+
+    vector<int> playingTeams;
+    vector<int> matches;
+    TournamentState state;
+    int tournamentWinner;
 };
 
-class TournamentRepository {
-
+class Team {
+    int teamId;
+    string name;
+    vector<int> players;
+    vector<int> matches;
 };
 
-class TournameService {
-    
+class TournamentDao {
+    unordered_map<int, Tournament> tournaments;
+};
+
+class PlayerDao {
+    unordered_map<int, Player> players;
+};
+
+class MatchDao {
+    unordered_map<int, Match> matches;
+};
+
+class CricBuzzSystem {
+    TournamentDao tournamentDao;
+    PlayerDao playerDao;
+    MatchDao matchDao;
+
+public:
+    void addTournament();
+    void addMatch();
+
+    int getTournamentWinner();
+    // List last 5 comments.
+    vector<Comment> getComment() {
+
+    };
+
 };

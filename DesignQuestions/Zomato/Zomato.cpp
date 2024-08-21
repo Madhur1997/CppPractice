@@ -126,7 +126,7 @@ public:
 
 class RiderMatchingStrategyFactory {
 public:
-    static IRiderMatchingStrategy getStrategy() {
+    static IRiderMatchingStrategy* getStrategy() {
         // based on customer id, customer rating, return IRiderMatchingStrategy
         return new LocationRiderMatching();
     }

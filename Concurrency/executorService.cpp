@@ -116,16 +116,12 @@ public:
 	~ExecutorService() {
 		unique_lock<mutex> lock(mtx);
 		running = false;
-		lock.unlock();
 		cvScheduler.notify_one();
 		cvWorker.notify_all();
-		if(scheduler.joinable()) {
-			scheduler.join();
-		}
+		lock.unlock();
+		scheduler.join();
 		for(int i=0; i<workerThreads.size(); i++) {
-			if(workerThreads[i].joinable()) {
-				workerThreads[i].join();
-			}
+			workerThreads[i].join();
 		}
 	}
 
@@ -136,7 +132,7 @@ public:
 		rt.initialDelay = initialDelay;
 		auto now = chrono::system_clock::now();
 		pTT p = make_pair(rt, now + initialDelay);
-		if(!taskQueue.empty() && p.second < taskQueue.top().second) {
+		if(taskQueue.empty() || p.second < taskQueue.top().second) {
 			cvScheduler.notify_one();
 		}
 
@@ -151,7 +147,7 @@ public:
 		rt.period = period;
 		auto now = chrono::system_clock::now();
 		pTT p = make_pair(rt, now + initialDelay);
-		if(!taskQueue.empty() && p.second < taskQueue.top().second) {
+		if(taskQueue.empty() || p.second < taskQueue.top().second) {
 			cvScheduler.notify_one();
 		}
 
@@ -166,9 +162,8 @@ public:
 		rt.delay = delay;
 		auto now = chrono::system_clock::now();
 		pTT p = make_pair(rt, now + initialDelay);
-		if(!taskQueue.empty() && p.second < taskQueue.top().second) {
-			cvScheduler.notify_one();
-		}
+		if(taskQueue.empty() || p.second < taskQueue.top().second) {
+			cvScheduler.notify_one();		}
 		taskQueue.push(p);
 	}
 };

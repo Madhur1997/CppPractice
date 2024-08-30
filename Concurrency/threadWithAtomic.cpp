@@ -6,10 +6,11 @@
 
 using namespace std;
 
-static atomic<int> shared_value = 0;
+static int shared_value;
+
 
 int main() {
-	
+	shared_value = 0;
 	auto lambda_thread_func = []() {
 		shared_value+=2;
 	};		

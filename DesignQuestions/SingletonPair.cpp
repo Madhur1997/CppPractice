@@ -45,6 +45,6 @@ SP* SP::instance2 = nullptr;
 
 
 int main() {
-
+    int arr[] = {};
     return 0;
 }

@@ -6,13 +6,14 @@ using namespace std;
 template<typename T>
 class UniquePtr {
     T* ptr;
+public:
     void reset() {
         if(!this->ptr) {
             delete this->ptr;
         }
         this->ptr = nullptr;
     }
-public:
+
     UniquePtr() : ptr(nullptr) {}
     UniquePtr(T* obj) {
         this->ptr = obj;
@@ -22,7 +23,6 @@ public:
     void operator=(const UniquePtr&) = delete;
 
     UniquePtr(UniquePtr&& cPtr) {
-        this->reset();
         this->ptr = cPtr.ptr;
         cPtr.ptr = nullptr;
     }
@@ -34,7 +34,7 @@ public:
     }
 
     T& operator*() {
-        return *(this->ptr);
+        return (*this->ptr);
     }
 
     T* operator->() {
@@ -65,7 +65,6 @@ public:
     void operator=(const UniquePtr& cPtr) = delete;
 
     UniquePtr(UniquePtr&& cPtr) {
-        this->reset();
         this->ptr = cPtr.ptr;
         cPtr.ptr = nullptr;
     }
@@ -82,7 +81,7 @@ public:
 
     T& operator*() {
         if(this->ptr != nullptr) {
-            return *(this->ptr);
+            return (*this->ptr);
         }
     }
 
@@ -118,7 +117,7 @@ class SharedPtr {
 public:
     SharedPtr() : ptr_(nullptr) {
         cout<<"Default constructor invoked"<<endl;
-        mCounter = new int(0);
+        this->mCounter = new int(0);
     }
 
     SharedPtr(T* ptr) : ptr_(ptr) {
@@ -228,5 +227,6 @@ int main() {
     cout << sPtr3.use_count()<<endl;
     sPtr.reset();
     cout << sPtr3.use_count()<<endl;
+
     return 0;
 }

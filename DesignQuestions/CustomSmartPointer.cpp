@@ -196,7 +196,7 @@ public:
 
 int main() {
 
-    Unique pointer individual objects
+    // Unique pointer individual objects
     UniquePtr<int> ptr(new int(5));
     cout<<*ptr<<endl;
     *ptr=4;
@@ -207,7 +207,7 @@ int main() {
     ptr3 = move(ptr2);
     cout<<ptr.get()<<endl;
 
-    Unique pointer array
+    // Unique pointer array
     UniquePtr<int[]> ptr4(new int[6]);
     ptr4[0] = 1;
     ptr4[1] = 2;
